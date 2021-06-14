@@ -20,4 +20,6 @@ public interface Graph {
      */
     void bfs(String startLabel);
 
+    void bfsMinPath(String start, String end);
+
 }
