@@ -119,6 +119,12 @@ public class GraphImpl implements Graph {
         vertex.setVisited(true);
     }
 
+    private void visitVertex(Vertex vertex, Queue<Vertex> queue, Vertex previous) {
+        queue.add(vertex);
+        vertex.setPrevious(previous);
+        vertex.setVisited(true);
+    }
+
     @Override
     public void bfs(String startLabel) {
         int startIndex = indexOf(startLabel);
@@ -140,5 +146,56 @@ public class GraphImpl implements Graph {
         }
 
         resetVertexState();
+    }
+
+    @Override
+    public void bfsMinPath(String startLabel, String endLabel) {
+        int startIndex = indexOf(startLabel);
+        if (startIndex == -1) {
+            throw new IllegalArgumentException("Invalid start label");
+        }
+        int destIndex = indexOf(endLabel);
+        if (destIndex == -1) {
+            throw new IllegalArgumentException("Invalid end label");
+        }
+
+        System.out.print("Minimum shortest path : \n");
+
+        Queue<Vertex> queue = new LinkedList<>();
+
+        Vertex vertex = vertexList.get(startIndex);
+        Vertex destVertex = vertexList.get(destIndex);
+
+        visitVertex(queue, vertex);
+
+        while (!queue.isEmpty()) {
+            vertex = getNearUnvisitedVertex(queue.peek());
+            if (vertex != null) {
+                visitVertex(vertex, queue, queue.peek());
+                if (vertex.equals(destVertex)) {
+                    printRoute(vertex);
+                    break;
+                }
+            }
+            else {
+                queue.remove();
+            }
+        }
+
+        resetVertexState();
+    }
+
+    private void printRoute(Vertex vertex) {
+
+        Stack<String> stack = new Stack<>();
+
+        while (vertex.getPrevious() != null) {
+            stack.push(vertex.getLabel());
+            vertex = vertex.getPrevious();
+        }
+
+        while (!stack.empty()) {
+            System.out.print(" -> " + stack.pop());
+        }
     }
 }
